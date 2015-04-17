@@ -1,2 +1,3 @@
 # cs325_project
-CS325 Project 1
+CS325 Projects
+Authors: Daniel Bonnin, Kevin Parks, Alex Thomas
