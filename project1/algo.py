@@ -29,7 +29,7 @@ def a4(arr):
 
 import argparse
 
-parser = argparse.ArgumentParser(description="find fibonacci numbers")
+parser = argparse.ArgumentParser(description="Find maximum sum sub-array")
 
 parser.add_argument("-a", "--algo", type=int, help="The choice of algorithm(1-4)")
 parser.add_argument("-f", "--file", help="Path to input file")
