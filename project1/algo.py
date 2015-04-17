@@ -1,6 +1,6 @@
 #Author: Daniel Bonnin, Kevin Parks, Alex Thomas
 #email:  bonnind@onid.oregonstate.edu
-#class:  CS324
+#class:  CS325
 #Assgn:  Project 1
 #Descr:  This program calculates a maximum sum array using 1 of 4 algorithms. 
 #
@@ -13,7 +13,7 @@
 #
 #        The argument -f followed by a file name indicates the input text
 #        file to use. 
-#        Usage: python fib.py -i <1-4> [-f <filepath>] 
+#        Usage: python fib.py -a <1-4> [-f <filepath>] 
 
 def a1(arr):
     return arr
