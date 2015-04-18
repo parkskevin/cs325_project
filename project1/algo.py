@@ -28,11 +28,16 @@ def a4(arr):
     return arr
 
 import argparse
+import rand #random file generator
+
+RANDFILE = "rnums.txt"
+MSSFILE = "MSS_Problems.txt"
 
 parser = argparse.ArgumentParser(description="Find maximum sum sub-array")
 
 parser.add_argument("-a", "--algo", type=int, help="The choice of algorithm(1-4)")
 parser.add_argument("-f", "--file", help="Path to input file")
+parser.add_argument("-r", "--rand", help="Randomly generated")
 args = parser.parse_args()
 
 if not (args.algo):
@@ -41,11 +46,23 @@ if not (args.algo):
 elif (args.algo > 4 or args.algo < 1):
     parser.error("Choose an algorithm 1-4")
 elif (not args.file):
-    args.file = "MSS_Problems.txt"
+	#no file, so random is an option
+	if(args.rand):
+		args.file = RANDFILE
+	else:
+		args.file = MSSFILS
 print "Input file: " + args.file
 print "Selected algorithm: " + str(args.algo)
 
-input = '[1,2,3]'
+#if args.rand is used, make the file first, then read it in
+if(args.rand):
+	#needs some sanitizing funcs here
+	rand.make_rand(args.rand)
+	f = open(args.file, 'r')
+	input = f.read()
+	f.close()
+else:
+	input = '[1,2,3]'
 testArr = map(int, input.replace("[", "").replace("]", "").split(','))
 
 if (args.algo == 1):
