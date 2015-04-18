@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 #Author: Daniel Bonnin, Kevin Parks, Alex Thomas
 #email:  bonnind@onid.oregonstate.edu
 #class:  CS325
