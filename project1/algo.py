@@ -44,15 +44,16 @@ args = parser.parse_args()
 
 if not (args.algo):
     parser.error("No algorithm specified")
-
 elif (args.algo > 4 or args.algo < 1):
     parser.error("Choose an algorithm 1-4")
+if (args.file and args.rand):
+    parser.error("Cannot do create random and open existing file. Choose one.")
 elif (not args.file):
 	#no file, so random is an option
 	if(args.rand):
 		args.file = RANDFILE
 	else:
-		args.file = MSSFILS
+		args.file = MSSFILE
 print "Input file: " + args.file
 print "Selected algorithm: " + str(args.algo)
 
@@ -60,11 +61,12 @@ print "Selected algorithm: " + str(args.algo)
 if(args.rand):
 	#needs some sanitizing funcs here
 	rand.make_rand(args.rand)
-	f = open(args.file, 'r')
-	input = f.read()
-	f.close()
-else:
-	input = '[1,2,3]'
+
+#open whichever file as input
+f = open(args.file, 'r')
+input = f.read()
+f.close()
+
 testArr = map(int, input.replace("[", "").replace("]", "").split(','))
 
 if (args.algo == 1):
