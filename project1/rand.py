@@ -5,51 +5,60 @@
 #Descr:  This program creates a random output to file for testing purposes. 
 #
 #Input:  The program takes an integer as an argument. The program creates
-#		 this number of values in the same format as MSS_Problems.txt
+#		 this number of arrays in the same format as MSS_Problems.txt
 #
-#Usage:  The argument -n followed by an integer will cause a random array
-#        to be generated to file
+#Usage:  The argument -n followed by an integer will cause a random number
+#        'n' arrays to be generated of a random length of ARRSIZE
 
 import random
 import sys
 
-def make_rand(num):
+def make_rand(arrays):
 	#max and min values to generate random values between
 	MAXVAL = 100
 	MINVAL = -100
+	#size of each array to be generated
+	ARRSIZE = random.randint(0, 10)
 
 	#name of rand file
 	FILENAME = "rnums.txt"
 
 	#some sanitizing
-	num = int(num)
-	if(not isinstance(num, int)):
+	arrays = int(arrays)
+	if(not isinstance(arrays, int)):
 		sys.exit("Value not supported")
-	if(num > sys.maxint or num < 0):
+	if(arrays > sys.maxint or arrays < 0):
 		sys.exit("Value not supported.")
 	
 	#create the random values
 	randoms = []
-	for i in range(0, num):
-		randoms.append(random.randint(MINVAL, MAXVAL))
+	for i in range(0, arrays):
+		randoms.append([])
+		for j in range(0, ARRSIZE):
+			randoms[i].append(random.randint(MINVAL, MAXVAL))
 
 	#make sure there's at least 1 positive value
 	flag = 0
-	for i in randoms:
-		if(i > 0):
-			flag = 1
-	if(flag == 0):
-		randoms[random.randint(0, num - 1)] *= -1
+	for index, i in enumerate(randoms):
+		for j in i:
+			if(j > 0):
+				flag = 1
+		if(flag == 0):
+			randoms[index][random.randint(0, ARRSIZE - 1)] *= -1
 
 	#write to file
 	num_string = ""
-	for index, item in enumerate(randoms):
-		if(index == 0):
-			num_string += "[%d, " % item
-		elif(index < num - 1):
-			num_string += "%d, " % item
-		else:
-			num_string += "%d]\n" % item
+	for i in randoms:
+		for index, item in enumerate(i):
+			if(len(i) == 1):
+				num_string += "[%d]\n" % item
+				break
+			if(index == 0):
+				num_string += "[%d, " % item
+			elif(index < ARRSIZE - 1):
+				num_string += "%d, " % item
+			else:
+				num_string += "%d]\n" % item
 	f = open(FILENAME, 'w')
 	f.write(num_string)
 	f.close()

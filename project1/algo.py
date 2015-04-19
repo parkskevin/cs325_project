@@ -15,70 +15,135 @@
 #
 #        The argument -f followed by a file name indicates the input text
 #        file to use. 
-#        Usage: python fib.py -a <1-4> [-f <filepath>] 
+#
+#		 The argument -r following by an integer > 0 indicated to use
+#		 a randomly generated file containing 'value' arrays as input.
+#
+#        Usage: python fib.py -a <1-4> [-f <filepath> XOR -r <arrays>] 
 
 def a1(arr):
-    return arr
+	fakeSubArrLen = int(len(arr)/2)
+	if (fakeSubArrLen == 0):
+		fakeSubArrLen = 1
+	returnArr = []
+	for i in range(0, fakeSubArrLen):
+		returnArr.append(arr[i]);
+	return returnArr
 
 def a2(arr):
-    return arr
+	fakeSubArrLen = int(len(arr)/2)
+	if (fakeSubArrLen == 0):
+		fakeSubArrLen = 1
+	returnArr = []
+	for i in range(0, fakeSubArrLen):
+		returnArr.append(arr[i]);
+	return returnArr
 
 def a3(arr):
-    return arr
+	fakeSubArrLen = int(len(arr)/2)
+	if (fakeSubArrLen == 0):
+		fakeSubArrLen = 1
+	returnArr = []
+	for i in range(0, fakeSubArrLen):
+		returnArr.append(arr[i]);
+	return returnArr
 
 def a4(arr):
-    return arr
-
-import argparse
+	fakeSubArrLen = int(len(arr)/2)
+	if (fakeSubArrLen == 0):
+		fakeSubArrLen = 1
+	returnArr = []
+	for i in range(0, fakeSubArrLen):
+		returnArr.append(arr[i]);
+	return returnArr
+	
+def printResults(arr, subArr, maxSum):
+	print("Array: %s" % arr)
+	print("Subarray: %s" % subArr)
+	print("Sum: %d" % maxSum)
+	
+import argparse #cmd line arg parsing
 import rand #random file generator
+import time #calculate function times
 
+#constants
 RANDFILE = "rnums.txt"
 MSSFILE = "MSS_Problems.txt"
+OUTPUTFILE = "MSS_Results.txt"
 
+#cmd line args parser setup
 parser = argparse.ArgumentParser(description="Find maximum sum sub-array")
-
 parser.add_argument("-a", "--algo", type=int, help="The choice of algorithm(1-4)")
 parser.add_argument("-f", "--file", help="Path to input file")
 parser.add_argument("-r", "--rand", help="Randomly generated")
 args = parser.parse_args()
 
+#cmd line args logic
 if not (args.algo):
-    parser.error("No algorithm specified")
+	parser.error("No algorithm specified")
 elif (args.algo > 4 or args.algo < 1):
-    parser.error("Choose an algorithm 1-4")
+	parser.error("Choose an algorithm 1-4")
 if (args.file and args.rand):
-    parser.error("Cannot do create random and open existing file. Choose one.")
+	parser.error("Cannot do create random and open existing file. Choose one.")
 elif (not args.file):
 	#no file, so random is an option
 	if(args.rand):
 		args.file = RANDFILE
 	else:
 		args.file = MSSFILE
+
+#debug
 print "Input file: " + args.file
 print "Selected algorithm: " + str(args.algo)
 
-#if args.rand is used, make the file first, then read it in
+#if args.rand is used, make the file first
 if(args.rand):
 	#needs some sanitizing funcs here
 	rand.make_rand(args.rand)
 
 #open whichever file as input
 f = open(args.file, 'r')
-input = f.read()
+
+#create the master list to hold each array as another list (2D array)
+#append each array as new list of ints for each line of text read from file
+testArr = []
+for i, line in enumerate(f):
+	testArr.append([])
+	testArr[i].append(map(int, line.replace("[", "").replace("]", "").replace("\n", "").split(',')))
 f.close()
 
-testArr = map(int, input.replace("[", "").replace("]", "").split(','))
-
+#for each algorithm, find the subarray, calculate the sum, then print
+#for loop obviously not implemented yet
 if (args.algo == 1):
-    print(a1(testArr))
+	for i in testArr:
+		for j in i:
+			subArray = a1(j)
+			totalSum = sum(subArray)
+			printResults(j, subArray, totalSum)
+			print("")
 
 elif (args.algo == 2):
-    a2(testArr)
+	for i in testArr:
+		for j in i:
+			subArray = a1(j)
+			totalSum = sum(subArray)
+			printResults(j, subArray, totalSum)
+			print("")
 
 elif (args.algo == 3):
-    a3(testArr)
+	for i in testArr:
+		for j in i:
+			subArray = a1(j)
+			totalSum = sum(subArray)
+			printResults(j, subArray, totalSum)
+			print("")
 
 elif (args.algo == 4):
-    a4(testArr)
+	for i in testArr:
+		for j in i:
+			subArray = a1(j)
+			totalSum = sum(subArray)
+			printResults(j, subArray, totalSum)
+			print("")
 
 
