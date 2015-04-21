@@ -20,15 +20,22 @@
 #		 a randomly generated file containing 'value' arrays as input.
 #
 #        Usage: python fib.py -a <1-4> [-f <filepath> XOR -r <arrays>] 
-
+import sys #for maxint
+import timeit
 def a1(arr):
-	fakeSubArrLen = int(len(arr)/2)
-	if (fakeSubArrLen == 0):
-		fakeSubArrLen = 1
-	returnArr = []
-	for i in range(0, fakeSubArrLen):
-		returnArr.append(arr[i]);
-	return returnArr
+	curMaxSubArray = -sys.maxint
+	curMaxStart = -1
+	curMaxEnd = -1
+	for i in range(len(arr)):
+	    for j in range(i, len(arr)):
+	        curSum = sum(arr[i : j + 1])
+	        if (curSum > curMaxSubArray):
+	            curMaxSubArray = curSum
+	            curMaxStart = i
+	            curMaxEnd = j
+	# print "array: " + str(arr)
+	# print "selected indices i:" + str(curMaxStart) + "j: " + str(curMaxEnd)
+	return arr[curMaxStart:curMaxEnd + 1]
 
 def a2(arr):
 	fakeSubArrLen = int(len(arr)/2)
@@ -58,9 +65,14 @@ def a4(arr):
 	return returnArr
 	
 def printResults(arr, subArr, maxSum):
-	print("Array: %s" % arr)
-	print("Subarray: %s" % subArr)
-	print("Sum: %d" % maxSum)
+	print("Original Array: %s" % arr)
+	if (maxSum > 0):
+		print("Subarray: %s" % subArr)
+		print("Max Sum: %d" % maxSum) 
+	else: 
+		print "Subarray: (empty)"
+		print "Max Sum: 0   ****  Note at least one value in the" + \
+		       " array must be positive"
 	
 import argparse #cmd line arg parsing
 import rand #random file generator
@@ -76,6 +88,7 @@ parser = argparse.ArgumentParser(description="Find maximum sum sub-array")
 parser.add_argument("-a", "--algo", type=int, help="The choice of algorithm(1-4)")
 parser.add_argument("-f", "--file", help="Path to input file")
 parser.add_argument("-r", "--rand", help="Randomly generated")
+parser.add_argument("-t", "--timing", help="record timings", action="store_true")
 args = parser.parse_args()
 
 #cmd line args logic
@@ -117,10 +130,13 @@ f.close()
 if (args.algo == 1):
 	for i in testArr:
 		for j in i:
-			subArray = a1(j)
-			totalSum = sum(subArray)
-			printResults(j, subArray, totalSum)
-			print("")
+			if (args.timing):
+				print(str(len(j))+", "+str(timeit.timeit(lambda:a1(j),number=1)))
+			else:
+				subArray = a1(j)
+				totalSum = sum(subArray)
+				printResults(j, subArray, totalSum)
+				print("")
 
 elif (args.algo == 2):
 	for i in testArr:
