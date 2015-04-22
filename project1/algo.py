@@ -54,7 +54,6 @@ def a2(arr):
 				curMaxEnd = j
 	return arr[curMaxStart:curMaxEnd + 1]
 
-#***************Getting wrong results; (maybe off-by-one error somewhere)
 def a3(arr):
 	def recSubArr(arr, low, high):
 		if high == low:
@@ -65,13 +64,10 @@ def a3(arr):
 			(rLow,rHigh,rSum) = recSubArr(arr, mid + 1, high)
 			(cLow,cHigh,cSum) = crossSub(arr,low,mid,high)
 		if lSum >= rSum and lSum >= cSum:
-			print "lSum = " + str(lSum)
 			return (lLow, lHigh, lSum)
 		elif rSum >= lSum and rSum >= cSum:
-			print "rSum = " + str(rSum)
 			return (rLow, rHigh, rSum)
 		else:
-			print "cSum = " + str(cSum)
 			return (cLow, cHigh, cSum)
 	
 	def crossSub(arr, low, mid, high):
@@ -93,7 +89,7 @@ def a3(arr):
 				maxRight = j
 		return (maxLeft, maxRight, lSum + rSum)
 	result = recSubArr(arr, 0, len(arr) - 1)
-	return arr[result[0] : result[1]]
+	return arr[result[0] : result[1] + 1]
 
 def a4(arr):
 	fakeSubArrLen = int(len(arr)/2)
