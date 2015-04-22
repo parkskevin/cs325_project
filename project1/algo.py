@@ -92,13 +92,24 @@ def a3(arr):
 	return arr[result[0] : result[1] + 1]
 
 def a4(arr):
-	fakeSubArrLen = int(len(arr)/2)
-	if (fakeSubArrLen == 0):
-		fakeSubArrLen = 1
-	returnArr = []
-	for i in range(0, fakeSubArrLen):
-		returnArr.append(arr[i]);
-	return returnArr
+	temp_sum = 0
+	max_sum = -sys.maxint
+	temp_start = 0#holds the start index of intermediate sum
+	max_start = 0#holds the start index of max sum
+	max_end = 0 #holds the end index of max sum
+	
+	for x in xrange(0,len(arr)):
+		temp_sum = temp_sum + arr[x]
+		
+		if temp_sum > max_sum:
+			max_sum = temp_sum
+			max_start = temp_start
+			max_end = x
+		if temp_sum < 0:
+			temp_sum = 0
+			temp_start = x+1
+
+	return arr[max_start:max_end + 1]
 	
 def printResults(arr, subArr, maxSum):
 	print("Original Array: %s" % arr)
