@@ -41,13 +41,18 @@ def a1(arr):
 	return arr[curMaxStart:curMaxEnd + 1]
 
 def a2(arr):
-	fakeSubArrLen = int(len(arr)/2)
-	if (fakeSubArrLen == 0):
-		fakeSubArrLen = 1
-	returnArr = []
-	for i in range(0, fakeSubArrLen):
-		returnArr.append(arr[i]);
-	return returnArr
+	curMaxSubArray = -sys.maxint
+	curMaxStart = -1
+	curMaxEnd = -1
+	for i in range(len(arr)):
+		curSum = 0
+		for j in range(i, len(arr)):
+			curSum += arr[j]
+			if (curSum > curMaxSubArray):
+				curMaxSubArray = curSum
+				curMaxStart = i
+				curMaxEnd = j
+	return arr[curMaxStart:curMaxEnd + 1]
 
 def a3(arr):
 	fakeSubArrLen = int(len(arr)/2)
