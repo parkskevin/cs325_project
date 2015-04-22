@@ -123,7 +123,7 @@ OUTPUTFILE = "MSS_Results.txt"
 parser = argparse.ArgumentParser(description="Find maximum sum sub-array")
 parser.add_argument("-a", "--algo", type=int, help="The choice of algorithm(1-4)")
 parser.add_argument("-f", "--file", help="Path to input file")
-parser.add_argument("-r", "--rand", help="Randomly generated")
+parser.add_argument("-r", "--rand", type=int, help="Randomly generated")
 parser.add_argument("-t", "--timing", help="record timings", action="store_true")
 args = parser.parse_args()
 
