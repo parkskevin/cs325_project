@@ -31,3 +31,7 @@ echo
 echo "***** Case 8 *****"
 echo "Subarray: (empty)"
 echo "Max sum: 0"
+echo
+echo "***** Case 9 *****"
+echo "Subarray: 5"
+echo "Max sum: 5"
