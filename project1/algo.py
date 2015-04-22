@@ -19,9 +19,14 @@
 #		 The argument -r following by an integer > 0 indicated to use
 #		 a randomly generated file containing 'value' arrays as input.
 #
-#        Usage: python fib.py -a <1-4> [-f <filepath> XOR -r <arrays>] 
+#		 The argument -t turns off printing, and outputs Excel format of
+#	     2 columns: array size and timing result. 
+#
+#        Usage: python fib.py -a <1-4> [-f <filepath> XOR -r <arrays>]  [-t]
+
 import sys #for maxint
-import timeit
+import timeit #for timings
+
 def a1(arr):
 	curMaxSubArray = -sys.maxint
 	curMaxStart = -1
@@ -33,8 +38,6 @@ def a1(arr):
 	            curMaxSubArray = curSum
 	            curMaxStart = i
 	            curMaxEnd = j
-	# print "array: " + str(arr)
-	# print "selected indices i:" + str(curMaxStart) + "j: " + str(curMaxEnd)
 	return arr[curMaxStart:curMaxEnd + 1]
 
 def a2(arr):
@@ -141,25 +144,34 @@ if (args.algo == 1):
 elif (args.algo == 2):
 	for i in testArr:
 		for j in i:
-			subArray = a1(j)
-			totalSum = sum(subArray)
-			printResults(j, subArray, totalSum)
-			print("")
+			if (args.timing):
+				print(str(len(j))+", "+str(timeit.timeit(lambda:a2(j),number=1)))
+			else:
+				subArray = a2(j)
+				totalSum = sum(subArray)
+				printResults(j, subArray, totalSum)
+				print("")
 
 elif (args.algo == 3):
 	for i in testArr:
 		for j in i:
-			subArray = a1(j)
-			totalSum = sum(subArray)
-			printResults(j, subArray, totalSum)
-			print("")
+			if (args.timing):
+				print(str(len(j))+", "+str(timeit.timeit(lambda:a3(j),number=1)))
+			else:
+				subArray = a3(j)
+				totalSum = sum(subArray)
+				printResults(j, subArray, totalSum)
+				print("")
 
 elif (args.algo == 4):
 	for i in testArr:
 		for j in i:
-			subArray = a1(j)
-			totalSum = sum(subArray)
-			printResults(j, subArray, totalSum)
-			print("")
+			if (args.timing):
+				print(str(len(j))+", "+str(timeit.timeit(lambda:a4(j),number=1)))
+			else:
+				subArray = a4(j)
+				totalSum = sum(subArray)
+				printResults(j, subArray, totalSum)
+				print("")
 
 
