@@ -1,0 +1,16 @@
+#README FILE
+#Authors: Daniel Bonnin, Kevin Parks, Alex Thomas
+#Group: 11
+#Class: CS235 Spring 2015
+#Assgn: Project 1
+
+Our project consists of the following components:
+	1. algo.py - primary project file, does max sum subarray work
+	2. rand.py - random array generator, for testing purposes
+	3. MSS_Problems.txt - provided test case
+
+To run the program:
+	1. Ensure all components are located in the same directory
+	2. Run 'algo.py' from the command line
+		2a. If python is not in your path, then run 'path/to/python algo.py'
+	3. The MSS_Problems.txt file will be read and results output to MSS_Results.txt
