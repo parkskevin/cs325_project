@@ -6,11 +6,14 @@
 #Assgn:  Project 1
 #Descr:  This program calculates a maximum sum array using 1 of 4 algorithms. 
 #
-#Input:  The program takes a text file as an argument. The program reads
-#        Each line in the input file as a separate input. If no input file 
+#Input:  The program takes a text file as input. The program reads
+#        each line in the input file as a separate input. If no input file 
 #        is specified, the program will attempt to open MSS_Problems.txt
 #
-#Usage:  The argument -a followed by a number 1-4 indicates an algorithm
+#Usage:  Without arguments, the program reads from MSS_Problems.txt and
+#        writes results to MSS_Results.txt
+#
+#        The argument -a followed by a number 1-4 indicates an algorithm
 #        to use to calculate the maximum sum array. 
 #
 #        The argument -f followed by a file name indicates the input text
@@ -22,7 +25,7 @@
 #		 The argument -t turns off printing, and outputs Excel format of
 #	     2 columns: array size and timing result. 
 #
-#        Usage: python algo.py -a <1-4> [-f <filepath> XOR -r <arrays>]  [-t]
+#        Usage: python algo.py [-a <1-4>] [-f <filepath> XOR -r <arrays>]  [-t]
 
 import sys #for maxint
 import timeit #for timings
@@ -118,18 +121,31 @@ def a4(arr):
 
 	return arr[max_start:max_end + 1]
 	
-def printResults(arr, subArr, maxSum):
-	print("Original Array: %s" % arr)
+def printResults(arr, subArr, maxSum, mssTest, file):
+	if not(mssTest):
+		if(file):
+			file.write("Original Array: %s\n" % arr)
+		else:
+			print("Original Array: %s" % arr)
 	if (maxSum > 0):
-		print("Subarray: %s" % subArr)
-		print("Max Sum: %d" % maxSum) 
+		if(file):
+			file.write("Subarray: %s\n" % subArr)
+			file.write("Max Sum: %d\n" % maxSum)
+		else:
+			print("Subarray: %s" % subArr)
+			print("Max Sum: %d" % maxSum) 
 	else: 
-		print "Subarray: (empty)"
-		print "Max Sum: 0   ****  Note at least one value in the" + \
-		       " array must be positive"
+		if(file):
+			file.write("Subarray: (empty)\n")
+			file.write("Max Sum: 0   ****  Note at least one value in the" + \
+				   " array must be positive\n")
+		else:
+			print "Subarray: (empty)"
+			print "Max Sum: 0   ****  Note at least one value in the" + \
+				   " array must be positive"
 	
 #cmd line args parser setup
-parser = argparse.ArgumentParser(description="Find maximum sum sub-array")
+parser = argparse.ArgumentParser(description="Find maximum sum sub-array. No args does MSS_Results.txt test")
 parser.add_argument("-a", "--algo", type=int, help="The choice of algorithm(1-4)")
 parser.add_argument("-f", "--file", help="Path to input file")
 parser.add_argument("-r", "--rand", type=int, help="Randomly generated")
@@ -137,7 +153,14 @@ parser.add_argument("-t", "--timing", help="record timings", action="store_true"
 args = parser.parse_args()
 
 #cmd line args logic
-if not (args.algo):
+mssTest = False #whether we're printing to the MSS_Results.txt
+out = False #file handle to MSS_Results.txt
+
+#if not cmd line args, do MSS_Results.txt action
+if not (len(sys.argv) > 1):
+	mssTest = True
+	out = file(OUTPUTFILE, 'w')
+elif not (args.algo):
 	parser.error("No algorithm specified")
 elif (args.algo > 4 or args.algo < 1):
 	parser.error("Choose an algorithm 1-4")
@@ -150,9 +173,10 @@ elif (not args.file):
 	else:
 		args.file = MSSFILE
 
-#debug
-print "Input file: " + args.file
-print "Selected algorithm: " + str(args.algo)
+if not (mssTest):
+	#debug
+	print "Input file: " + args.file
+	print "Selected algorithm: " + str(args.algo)
 
 #if args.rand is used, make the file first
 if(args.rand):
@@ -171,7 +195,9 @@ for i, line in enumerate(f):
 f.close()
 
 #for each algorithm, find the subarray, calculate the sum, then print
-if (args.algo == 1):
+if (args.algo == 1 or mssTest):
+	if not (args.timing or isinstance(out, bool)):
+		out.write("******************** Algorithm 1 ********************\n")
 	for i in testArr:
 		for j in i:
 			if (args.timing):
@@ -179,10 +205,13 @@ if (args.algo == 1):
 			else:
 				subArray = a1(j)
 				totalSum = sum(subArray)
-				printResults(j, subArray, totalSum)
-				print("")
+				printResults(j, subArray, totalSum, mssTest, out)
+				if not (mssTest):
+					print("")
 
-elif (args.algo == 2):
+if (args.algo == 2 or mssTest):
+	if not (args.timing or isinstance(out, bool)):
+		out.write("******************** Algorithm 2 ********************\n")
 	for i in testArr:
 		for j in i:
 			if (args.timing):
@@ -190,10 +219,13 @@ elif (args.algo == 2):
 			else:
 				subArray = a2(j)
 				totalSum = sum(subArray)
-				printResults(j, subArray, totalSum)
-				print("")
+				printResults(j, subArray, totalSum, mssTest, out)
+				if not (mssTest):
+					print("")
 
-elif (args.algo == 3):
+if (args.algo == 3 or mssTest):
+	if not (args.timing or isinstance(out, bool)):
+		out.write("******************** Algorithm 3 ********************\n")
 	for i in testArr:
 		for j in i:
 			if (args.timing):
@@ -201,10 +233,13 @@ elif (args.algo == 3):
 			else:
 				subArray = a3(j)
 				totalSum = sum(subArray)
-				printResults(j, subArray, totalSum)
-				print("")
+				printResults(j, subArray, totalSum, mssTest, out)
+				if not (mssTest):
+					print("")
 
-elif (args.algo == 4):
+if (args.algo == 4 or mssTest):
+	if not (args.timing or isinstance(out, bool)):
+		out.write("******************** Algorithm 4 ********************\n")
 	for i in testArr:
 		for j in i:
 			if (args.timing):
@@ -212,7 +247,9 @@ elif (args.algo == 4):
 			else:
 				subArray = a4(j)
 				totalSum = sum(subArray)
-				printResults(j, subArray, totalSum)
-				print("")
+				printResults(j, subArray, totalSum, mssTest, out)
+				if not (mssTest):
+					print("")
 
-
+if (out):
+	out.close()
