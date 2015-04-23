@@ -22,10 +22,18 @@
 #		 The argument -t turns off printing, and outputs Excel format of
 #	     2 columns: array size and timing result. 
 #
-#        Usage: python fib.py -a <1-4> [-f <filepath> XOR -r <arrays>]  [-t]
+#        Usage: python algo.py -a <1-4> [-f <filepath> XOR -r <arrays>]  [-t]
 
 import sys #for maxint
 import timeit #for timings
+import argparse #cmd line arg parsing
+import rand #random file generator
+#import time #calculate function times
+
+#constants
+RANDFILE = "rnums.txt"
+MSSFILE = "MSS_Problems.txt"
+OUTPUTFILE = "MSS_Results.txt"
 
 def a1(arr):
 	curMaxSubArray = -sys.maxint
@@ -121,15 +129,6 @@ def printResults(arr, subArr, maxSum):
 		print "Max Sum: 0   ****  Note at least one value in the" + \
 		       " array must be positive"
 	
-import argparse #cmd line arg parsing
-import rand #random file generator
-import time #calculate function times
-
-#constants
-RANDFILE = "rnums.txt"
-MSSFILE = "MSS_Problems.txt"
-OUTPUTFILE = "MSS_Results.txt"
-
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Find maximum sum sub-array")
 parser.add_argument("-a", "--algo", type=int, help="The choice of algorithm(1-4)")
@@ -173,7 +172,6 @@ for i, line in enumerate(f):
 f.close()
 
 #for each algorithm, find the subarray, calculate the sum, then print
-#for loop obviously not implemented yet
 if (args.algo == 1):
 	for i in testArr:
 		for j in i:

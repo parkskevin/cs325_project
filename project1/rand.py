@@ -7,8 +7,8 @@
 #Input:  The program takes an integer as an argument. The program creates
 #		 this number of arrays in the same format as MSS_Problems.txt
 #
-#Usage:  The argument -n followed by an integer will cause a random number
-#        'n' arrays to be generated of a random length of ARRSIZE
+#Usage:  The argument -n followed by an integer will cause 'n' arrays
+#        to be generated, each increasing in length from 1 to n-1
 
 import random
 import sys
