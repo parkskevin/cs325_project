@@ -19,25 +19,33 @@ def make_rand(arrays):
 	#max and min values to generate random values between
 	MAXVAL = 100
 	MINVAL = -100
-	#max size of arrays to be generated
-	ARRSIZE = arrays
+
+	#value to increment array size by
+	INCREMENT = arrays
+
+	#Number of arrays of each size to generate
+	NUM_ARRAYS = 10 
+
+	#Number of different n values
+	NUM_NVALS = 10
 
 	#name of rand file
 	FILENAME = "rnums.txt"
 
 	#some sanitizing
-	arrays = int(arrays)
-	if(not isinstance(arrays, int)):
-		sys.exit("Value not supported")
-	if(arrays > sys.maxint or arrays < 0):
-		sys.exit("Value not supported.")
-	
-	#create the random values
+	# arrays = int(arrays)
+	# if(not isinstance(arrays, int)):
+	# 	sys.exit("Value not supported")
+	# if(arrays > sys.maxint or arrays < 0):
+	# 	sys.exit("Value not supported.")
 	randoms = []
-	for i in range(0, arrays):
-		randoms.append([])
-		for j in range(0, i):								
-			randoms[i].append(random.randint(MINVAL, MAXVAL))
+	for k in range(0, NUM_NVALS):
+		#create the random values
+		for i in range(0, NUM_ARRAYS):
+			randoms.append([])
+			for j in range(0, INCREMENT):								
+				randoms[i + (k * NUM_ARRAYS)].append(random.randint(MINVAL, MAXVAL))
+		INCREMENT = arrays + INCREMENT
 
 	#make sure there's at least 1 positive value
 	# flag = 0
