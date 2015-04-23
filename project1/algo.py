@@ -28,7 +28,6 @@ import sys #for maxint
 import timeit #for timings
 import argparse #cmd line arg parsing
 import rand #random file generator
-#import time #calculate function times
 
 #constants
 RANDFILE = "rnums.txt"
