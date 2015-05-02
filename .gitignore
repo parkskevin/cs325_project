@@ -56,3 +56,5 @@ docs/_build/
 # PyBuilder
 target/
 rnums.txt
+*.pdf
+*.zip
