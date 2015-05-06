@@ -26,15 +26,40 @@ def a2(arr, value):
 #TODO greedy
 	return arr
 def a3(arr, value):
-#TODO dynamicp
-	return arr
+	Table = [0 for i in range(value + 1)] #tracks subsolutions
+	Array = [0 for i in range(value + 1)] #tracks coins used
+	#if we do an object method, replace SolutionArray and pass in Obj
+	SolutionArray = [0 for i in range(len(arr) + 1)]
+
+	Table[0] = 0 #amount 0 requires 0 coins
+	
+	#In an array of length Amount+1, set each index to a maxint
+	# value, then when index >= coin value, check if the
+	# index - coin_value < current value. If so, set current
+	# value to index-coin_value. Also add the CoinArray index
+	# to another array to track coins used.
+	for i in range(1, value+1):
+		Table[i] = sys.maxint
+		for j in range(len(arr)):
+			if(i >= arr[j]):
+				if(Table[i - arr[j]] + 1 < Table[i]):
+					Table[i] = Table[i - arr[j]] + 1
+					Array[i] = j
+	SolutionArray[len(arr)] = Table[value]
+	coins = value
+	while(coins):
+		SolutionArray[Array[coins]] += 1
+		coins = coins - arr[Array[coins]]
+		
+	return SolutionArray
 
 #rough rewrite, will probably need update
 def printResults(arr, minCoins, outputDebug, file):
+	del arr[len(arr)-1:]
 	if(file):
-		file.write("Coin Array: %s\n" % arr)
+		file.write("Coins: %s\n" % arr)
 	if(outputDebug):
-		print("Coin Array: %s" % arr)
+		print("Coins: %s" % arr)
 	if (minCoins > 0):
 		if(file):
 			file.write("Min Coins: %d\n" % minCoins)
@@ -95,8 +120,7 @@ for i, line in enumerate(f):
 		testArr[i / 2].append(map(int, line.replace("[", "").replace("]", "").replace("\n", "").split(',')))
 	else:
 		valueArr.append([])
-		line.replace("\n", "")
-		valueArr[i / 2].append(line)
+		valueArr[i / 2].append(int(line.replace("\n", "")))
 f.close()
 
 #for each algorithm, find the min coin per denomination value, calculate the sum, then print
@@ -106,13 +130,13 @@ if (args.algo == 1):
 	for k, i in enumerate(testArr):
 		for j in i:
 			if (args.timing):
-				print(str(len(j))+", "+str(timeit.timeit(lambda:a1(j, valueArr[k]),number=1)))
+				print(str(len(j))+", "+str(timeit.timeit(lambda:a1(j, valueArr[k][0]),number=1)))
 			else:
-				subArray = a1(j, valueArr[k])
+				subArray = a1(j, valueArr[k][0])
 				minCoins = sum(subArray)
 				printResults(subArray, minCoins, outputDebug, out)
 				if not (outputDebug):
-					print("")
+					out.write("")
 
 if (args.algo == 2):
 	if not (args.timing or isinstance(out, bool)):
@@ -120,13 +144,13 @@ if (args.algo == 2):
 	for k, i in enumerate(testArr):
 		for j in i:
 			if (args.timing):
-				print(str(len(j))+", "+str(timeit.timeit(lambda:a2(j, valueArr[k]),number=1)))
+				print(str(len(j))+", "+str(timeit.timeit(lambda:a2(j, valueArr[k][0]),number=1)))
 			else:
-				subArray = a2(j, valueArr[k])
+				subArray = a2(j, valueArr[k][0])
 				minCoins = sum(subArray)
 				printResults(subArray, minCoins, outputDebug, out)
 				if not (outputDebug):
-					print("")
+					out.write("")
 
 if (args.algo == 3):
 	if not (args.timing or isinstance(out, bool)):
@@ -134,13 +158,13 @@ if (args.algo == 3):
 	for k, i in enumerate(testArr):
 		for j in i:
 			if (args.timing):
-				print(str(len(j))+", "+str(timeit.timeit(lambda:a3(j, valueArr[k]),number=1)))
+				print(str(len(j))+", "+str(timeit.timeit(lambda:a3(j, valueArr[k][0]),number=1)))
 			else:
-				subArray = a3(j, valueArr[k])
-				minCoins = sum(subArray)
+				subArray = a3(j, valueArr[k][0])
+				minCoins = subArray[len(subArray) - 1]
 				printResults(subArray, minCoins, outputDebug, out)
 				if not (outputDebug):
-					print("")
+					out.write("")
 
 if (out):
 	out.close()
