@@ -22,9 +22,18 @@ OUTPUTFILE = "change.txt"
 def a1(arr, value):
 #TODO changeslow
 	return arr
+
 def a2(arr, value):
-#TODO greedy
-	return arr
+	arrlength = len(arr)
+	SolutionArray = [0 for i in range(len(arr)+1)]
+	while value > 0:
+		for i in range(arrlength, 0, -1):
+			if(arr[i-1] <= value):
+				SolutionArray[i-1] += 1
+				value -= arr[i-1]
+				break
+	return SolutionArray
+
 def a3(arr, value):
 	Table = [0 for i in range(value + 1)] #tracks subsolutions
 	Array = [0 for i in range(value + 1)] #tracks coins used
