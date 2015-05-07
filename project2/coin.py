@@ -19,13 +19,33 @@ import argparse #cmd line arg parsing
 INPUTFILE = "Amount.txt"
 OUTPUTFILE = "change.txt"
 
+#slowchange
 def a1(arr, value):
-#TODO changeslow
-	return arr
+	SolutionArray = [0 for i in range(len(arr))]
+	count = sys.maxint #track min coins overall
+	for o_idx in range(len(arr) - 1, -1, -1): #count from end of array, backwards to start
+		TempArray = [0 for i in range(len(arr))]
+		m_value = value
+		m_count = 0 #track internal count
+		#for each coin index, find max # of coins, keep going until m_value <= 0
+		for i_idx in range(o_idx, -1, -1):
+			while(m_value >= arr[i_idx]):
+				m_value -= arr[i_idx]
+				m_count += 1
+				TempArray[i_idx] += 1 #keep track of # of coins used
+		#only care about exact change
+		if(m_value == 0):
+			#new count check
+			if(m_count < count):
+				count = m_count
+				#assign this solution to our SolutionArray
+				SolutionArray = list(TempArray)
+	return SolutionArray
 
+#changegreedy
 def a2(arr, value):
 	arrlength = len(arr)
-	SolutionArray = [0 for i in range(len(arr)+1)]
+	SolutionArray = [0 for i in range(len(arr))]
 	while value > 0:
 		for i in range(arrlength, 0, -1):
 			if(arr[i-1] <= value):
@@ -34,11 +54,12 @@ def a2(arr, value):
 				break
 	return SolutionArray
 
+#changedp
 def a3(arr, value):
 	Table = [0 for i in range(value + 1)] #tracks subsolutions
 	Array = [0 for i in range(value + 1)] #tracks coins used
 	#if we do an object method, replace SolutionArray and pass in Obj
-	SolutionArray = [0 for i in range(len(arr) + 1)]
+	SolutionArray = [0 for i in range(len(arr))]
 
 	Table[0] = 0 #amount 0 requires 0 coins
 	
@@ -54,7 +75,7 @@ def a3(arr, value):
 				if(Table[i - arr[j]] + 1 < Table[i]):
 					Table[i] = Table[i - arr[j]] + 1
 					Array[i] = j
-	SolutionArray[len(arr)] = Table[value]
+	#SolutionArray[len(arr)] = Table[value]
 	coins = value
 	while(coins):
 		SolutionArray[Array[coins]] += 1
@@ -64,7 +85,6 @@ def a3(arr, value):
 
 #rough rewrite, will probably need update
 def printResults(arr, minCoins, outputDebug, file):
-	del arr[len(arr)-1:]
 	if(file):
 		file.write("Coins: %s\n" % arr)
 	if(outputDebug):
@@ -142,6 +162,7 @@ if (args.algo == 1):
 				print(str(len(j))+", "+str(timeit.timeit(lambda:a1(j, valueArr[k][0]),number=1)))
 			else:
 				subArray = a1(j, valueArr[k][0])
+				print subArray
 				minCoins = sum(subArray)
 				printResults(subArray, minCoins, outputDebug, out)
 				if not (outputDebug):
@@ -170,7 +191,7 @@ if (args.algo == 3):
 				print(str(len(j))+", "+str(timeit.timeit(lambda:a3(j, valueArr[k][0]),number=1)))
 			else:
 				subArray = a3(j, valueArr[k][0])
-				minCoins = subArray[len(subArray) - 1]
+				minCoins = sum(subArray)
 				printResults(subArray, minCoins, outputDebug, out)
 				if not (outputDebug):
 					out.write("")
