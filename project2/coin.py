@@ -19,7 +19,22 @@ import argparse #cmd line arg parsing
 INPUTFILE = "Amount.txt"
 OUTPUTFILE = "change.txt"
 
-#slowchange
+#helper
+# def makeChange(V, a, SolutionArray):
+	# for i in range(len(V) - 1, -1, -1):
+		# if (a >= V[i]):
+			# a -= V[i]
+			# SolutionArray[i] += 1
+			# return makeChange(V, a, SolutionArray)
+	# return SolutionArray
+
+#slowchange recursive
+# def a1(arr, value):
+	# SolutionArray = [0 for i in range(len(arr))]
+	# SolutionArray = makeChange(arr, value, SolutionArray)
+	# return SolutionArray
+
+#slowchange iterative version
 def a1(arr, value):
 	SolutionArray = [0 for i in range(len(arr))]
 	count = sys.maxint #track min coins overall
