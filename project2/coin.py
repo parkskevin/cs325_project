@@ -19,7 +19,7 @@ import argparse #cmd line arg parsing
 INPUTFILE = "Amount.txt"
 OUTPUTFILE = "change.txt"
 
-#slowchange recursive
+#slowchange helper
 def a1(arr, value):
 	SolutionArray = [0 for i in range(len(arr))]
 	#apply the same principle as we use in changedp for TempArray
@@ -32,7 +32,7 @@ def a1(arr, value):
 		coins = coins - arr[TempArray[coins]]
 	return SolutionArray
 	
-#helper
+#slowchange recursive
 def makeChange(V, a, TempArray):
 	#amount is 0, base case
 	if(a <= 0):
