@@ -52,29 +52,6 @@ def makeChange(V, a, TempArray):
 	
 	return count
 
-# #slowchange iterative version
-# def a1(arr, value):
-	# SolutionArray = [0 for i in range(len(arr))]
-	# count = sys.maxint #track min coins overall
-	# for o_idx in range(len(arr) - 1, -1, -1): #count from end of array, backwards to start
-		# TempArray = [0 for i in range(len(arr))]
-		# m_value = value
-		# m_count = 0 #track internal count
-		# #for each coin index, find max # of coins, keep going until m_value <= 0
-		# for i_idx in range(o_idx, -1, -1):
-			# while(m_value >= arr[i_idx]):
-				# m_value -= arr[i_idx]
-				# m_count += 1
-				# TempArray[i_idx] += 1 #keep track of # of coins used
-		# #only care about exact change
-		# if(m_value == 0):
-			# #new count check
-			# if(m_count < count):
-				# count = m_count
-				# #assign this solution to our SolutionArray
-				# SolutionArray = list(TempArray)
-	# return SolutionArray
-
 #changegreedy
 def a2(arr, value):
 	arrlength = len(arr)
