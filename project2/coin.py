@@ -19,43 +19,61 @@ import argparse #cmd line arg parsing
 INPUTFILE = "Amount.txt"
 OUTPUTFILE = "change.txt"
 
-#helper
-# def makeChange(V, a, SolutionArray):
-	# for i in range(len(V) - 1, -1, -1):
-		# if (a >= V[i]):
-			# a -= V[i]
-			# SolutionArray[i] += 1
-			# return makeChange(V, a, SolutionArray)
-	# return SolutionArray
-
 #slowchange recursive
-# def a1(arr, value):
-	# SolutionArray = [0 for i in range(len(arr))]
-	# SolutionArray = makeChange(arr, value, SolutionArray)
-	# return SolutionArray
-
-#slowchange iterative version
 def a1(arr, value):
 	SolutionArray = [0 for i in range(len(arr))]
-	count = sys.maxint #track min coins overall
-	for o_idx in range(len(arr) - 1, -1, -1): #count from end of array, backwards to start
-		TempArray = [0 for i in range(len(arr))]
-		m_value = value
-		m_count = 0 #track internal count
-		#for each coin index, find max # of coins, keep going until m_value <= 0
-		for i_idx in range(o_idx, -1, -1):
-			while(m_value >= arr[i_idx]):
-				m_value -= arr[i_idx]
-				m_count += 1
-				TempArray[i_idx] += 1 #keep track of # of coins used
-		#only care about exact change
-		if(m_value == 0):
-			#new count check
-			if(m_count < count):
-				count = m_count
-				#assign this solution to our SolutionArray
-				SolutionArray = list(TempArray)
+	#apply the same principle as we use in changedp for TempArray
+	TempArray = [0 for i in range(value + 1)]
+	mysum = makeChange(arr, value, TempArray);
+
+	coins = value
+	while(coins):
+		SolutionArray[TempArray[coins]] += 1
+		coins = coins - arr[TempArray[coins]]
 	return SolutionArray
+	
+#helper
+def makeChange(V, a, TempArray):
+	#amount is 0, base case
+	if(a <= 0):
+		return 0
+		
+	#set count to max, helps checks for min
+	count = sys.maxint
+	
+	#check every coin value
+	for i in range(len(V)):
+		if(V[i] <= a):
+			tmpCount = makeChange(V, a-V[i], TempArray) + 1
+			if (tmpCount < count):
+				count = tmpCount
+				#add the coin index to TempArray when this occurs
+				TempArray[a] = i
+	
+	return count
+
+# #slowchange iterative version
+# def a1(arr, value):
+	# SolutionArray = [0 for i in range(len(arr))]
+	# count = sys.maxint #track min coins overall
+	# for o_idx in range(len(arr) - 1, -1, -1): #count from end of array, backwards to start
+		# TempArray = [0 for i in range(len(arr))]
+		# m_value = value
+		# m_count = 0 #track internal count
+		# #for each coin index, find max # of coins, keep going until m_value <= 0
+		# for i_idx in range(o_idx, -1, -1):
+			# while(m_value >= arr[i_idx]):
+				# m_value -= arr[i_idx]
+				# m_count += 1
+				# TempArray[i_idx] += 1 #keep track of # of coins used
+		# #only care about exact change
+		# if(m_value == 0):
+			# #new count check
+			# if(m_count < count):
+				# count = m_count
+				# #assign this solution to our SolutionArray
+				# SolutionArray = list(TempArray)
+	# return SolutionArray
 
 #changegreedy
 def a2(arr, value):
@@ -90,7 +108,6 @@ def a3(arr, value):
 				if(Table[i - arr[j]] + 1 < Table[i]):
 					Table[i] = Table[i - arr[j]] + 1
 					Array[i] = j
-	#SolutionArray[len(arr)] = Table[value]
 	coins = value
 	while(coins):
 		SolutionArray[Array[coins]] += 1
@@ -174,10 +191,9 @@ if (args.algo == 1):
 	for k, i in enumerate(testArr):
 		for j in i:
 			if (args.timing):
-				print(str(len(j))+", "+str(timeit.timeit(lambda:a1(j, valueArr[k][0]),number=1)))
+				print(str(valueArr[k][0])+", "+str(len(j))+", "+str(timeit.timeit(lambda:a1(j, valueArr[k][0]),number=1)))
 			else:
 				subArray = a1(j, valueArr[k][0])
-				print subArray
 				minCoins = sum(subArray)
 				printResults(subArray, minCoins, outputDebug, out)
 				if not (outputDebug):
@@ -189,7 +205,7 @@ if (args.algo == 2):
 	for k, i in enumerate(testArr):
 		for j in i:
 			if (args.timing):
-				print(str(len(j))+", "+str(timeit.timeit(lambda:a2(j, valueArr[k][0]),number=1)))
+				print(str(valueArr[k][0])+", "+str(len(j))+", "+str(timeit.timeit(lambda:a1(j, valueArr[k][0]),number=1)))
 			else:
 				subArray = a2(j, valueArr[k][0])
 				minCoins = sum(subArray)
@@ -203,7 +219,7 @@ if (args.algo == 3):
 	for k, i in enumerate(testArr):
 		for j in i:
 			if (args.timing):
-				print(str(len(j))+", "+str(timeit.timeit(lambda:a3(j, valueArr[k][0]),number=1)))
+				print(str(valueArr[k][0])+", "+str(len(j))+", "+str(timeit.timeit(lambda:a1(j, valueArr[k][0]),number=1)))
 			else:
 				subArray = a3(j, valueArr[k][0])
 				minCoins = sum(subArray)
