@@ -121,7 +121,7 @@ parser = argparse.ArgumentParser(description="Find minimum coins")
 parser.add_argument("-a", "--algo", type=int, help="The choice of algorithm(1-3)")
 parser.add_argument("-f", "--file", help="Path to input file")
 parser.add_argument("-t", "--timing", help="record timings", action="store_true")
-parser.add_argument("-d", "--debug", help="turn debug messages on")
+parser.add_argument("-d", "--debug", help="turn debug messages on", action="store_true")
 args = parser.parse_args()
 
 #cmd line args logic
