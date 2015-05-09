@@ -182,7 +182,7 @@ if (args.algo == 2):
 	for k, i in enumerate(testArr):
 		for j in i:
 			if (args.timing):
-				print(str(valueArr[k][0])+", "+str(len(j))+", "+str(timeit.timeit(lambda:a1(j, valueArr[k][0]),number=1)))
+				print(str(valueArr[k][0])+", "+str(len(j))+", "+str(timeit.timeit(lambda:a2(j, valueArr[k][0]),number=1)))
 			else:
 				subArray = a2(j, valueArr[k][0])
 				minCoins = sum(subArray)
@@ -196,7 +196,7 @@ if (args.algo == 3):
 	for k, i in enumerate(testArr):
 		for j in i:
 			if (args.timing):
-				print(str(valueArr[k][0])+", "+str(len(j))+", "+str(timeit.timeit(lambda:a1(j, valueArr[k][0]),number=1)))
+				print(str(valueArr[k][0])+", "+str(len(j))+", "+str(timeit.timeit(lambda:a3(j, valueArr[k][0]),number=1)))
 			else:
 				subArray = a3(j, valueArr[k][0])
 				minCoins = sum(subArray)
