@@ -7,9 +7,25 @@
 #Descr:  This program calculates the least amount of coins necessary
 #	     to fulfill a given integer value currency. 
 #
-#Input:  //TODO
+#Input:  This program takes a text file as input. The program reads
+#		 each pair of lines in the file as a separate input. If no
+#		 input file is specified, an error will be generated. The
+#		 program outputs its results in a file named [inputfile]change.txt.
+#		 The [inputfile] prefix is set equal to the input filename provided.
 #
-#Usage:  //TODO
+#Usage:  Without arguments, the program returns an error on usage
+#
+#        The argument -a followed by a number 1-3 indicates an algorithm
+#        to use to calculate the minimum coins. 
+#
+#        The argument -f followed by a file name indicates the input text
+#        file to use. 
+#
+#		 The argument -t performs timing output to stdout 
+#
+#		 The argument -d prints output to stdout instead of to a file
+#
+#        Usage: python coin.py (-f <filepath>) [-a <1-3>] [-t] [-d]
 
 import sys #for maxint
 import timeit #for timings
@@ -18,6 +34,7 @@ import argparse #cmd line arg parsing
 #constants
 INPUTFILE = "Amount.txt"
 OUTPUTFILE = "change.txt"
+SLOWMAX = 31 #maximum amount we allow for slowchange
 
 #slowchange helper
 def a1(arr, value):
@@ -121,16 +138,18 @@ args = parser.parse_args()
 #cmd line args logic
 outputDebug = True #whether we're printing debug
 out = False #file handle to change.txt
+coinTest = False #whether this is a test of all algos
+canDoSlow = True #whether we can perform slowchange algo
 
 #handle cmd line args
 if not (len(sys.argv) > 2):
-	parser.error("No input file and/or algorithm specified")
+	parser.error("Too few arguments")
 elif not (args.algo):
-	parser.error("No algorithm specified")
-elif (args.algo > 3 or args.algo < 1):
+	coinTest = True #do all the algorithms then
+elif (args.algo and args.algo > 3 or args.algo < 1):
 	parser.error("Choose an algorithm 1-3")
 elif (not args.file):
-	args.file = INPUTFILE
+	parser.error("Missing file argument")
 if (not args.debug):
 	outputDebug = False
 
@@ -149,7 +168,7 @@ f = open(args.file, 'r')
 #create the master list to hold each array as another list (2D array)
 #append each array as new list of ints for each line of text read from file
 #append the value we're interested in realizing to another array, the
-#same inde matching the demonination array and value
+#same index matching the demonination array and value
 testArr = []
 valueArr = []
 for i, line in enumerate(f):
@@ -162,11 +181,17 @@ for i, line in enumerate(f):
 f.close()
 
 #for each algorithm, find the min coin per denomination value, calculate the sum, then print
-if (args.algo == 1):
+if (args.algo == 1 or coinTest == True):
 	if not (args.timing or isinstance(out, bool)):
 		out.write("******************** changeslow ********************\n")
 	for k, i in enumerate(testArr):
 		for j in i:
+			if (valueArr[k][0] > SLOWMAX):
+				if(outputDebug):
+					print "Output %d too large" % valueArr[k][0]
+				if(file):
+					out.write("Output %d too large\n" % valueArr[k][0])
+				continue
 			if (args.timing):
 				print(str(valueArr[k][0])+", "+str(len(j))+", "+str(timeit.timeit(lambda:a1(j, valueArr[k][0]),number=1)))
 			else:
@@ -176,7 +201,7 @@ if (args.algo == 1):
 				if not (outputDebug):
 					out.write("")
 
-if (args.algo == 2):
+if (args.algo == 2 or coinTest == True):
 	if not (args.timing or isinstance(out, bool)):
 		out.write("******************** changegreedy ********************\n")
 	for k, i in enumerate(testArr):
@@ -190,7 +215,7 @@ if (args.algo == 2):
 				if not (outputDebug):
 					out.write("")
 
-if (args.algo == 3):
+if (args.algo == 3 or coinTest == True):
 	if not (args.timing or isinstance(out, bool)):
 		out.write("******************** changedp ********************\n")
 	for k, i in enumerate(testArr):
