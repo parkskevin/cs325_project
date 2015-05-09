@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
-V = [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]
-amount = 2000
-increment = 1
-f = open("Amount#.txt", 'w')
+V = [1, 5, 10, 25, 50]
+amount = 1
+increment = 2
+f = open("Amount4_Small.txt", 'w')
 
-while amount <= 2200:
+while amount <= 31:
 	f.write("%s\n" % V)
 	f.write("%s\n" % amount)
 	amount += increment
