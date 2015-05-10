@@ -126,7 +126,6 @@ def printResults(arr, minCoins, outputDebug, file):
 		if(outputDebug):
 			print "Min Coins: 0   **** Value less than min coin"
 	
-#TODO: reuse most of this, rename as necessary
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Find minimum coins")
 parser.add_argument("-a", "--algo", type=int, help="The choice of algorithm(1-3)")
