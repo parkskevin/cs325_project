@@ -1,0 +1,8 @@
+1: Download source zip from: https://github.com/coin-or/pulp
+2: Unzip. Copy src/pulp to cs325_project/project3/
+The final structure needs to be:
+	cs325_project
+		project3
+			pulp/
+			pulpdemo.py
+3: Run demo program
