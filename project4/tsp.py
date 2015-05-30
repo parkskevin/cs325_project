@@ -50,10 +50,21 @@ def readinstance(filename):
     f.close()
     return cities
 
-def calcTsp(cities):
+def outputResults(cities, cityOrder, outFile):
+	dist = 0
+	for i in range(1, len(cityOrder), 1):
+		dist += distance(cities[i], cities[i - 1])
+	outFile.write(str(dist) + "\n")
+	for i in cityOrder:
+		outFile.write(str(i) + "\n")
+
+
+def calcTsp(cities, outFile):
 	#Input: an array of x, y cartesian coordinates
 	#Output: an approximate shortest path between input coordinates
-	print str(cities)
+	cityOrder = [0, 1, 2, 3, 4] #test
+	outputResults(cities, cityOrder, outFile)
+
 
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Enter an input file path")
@@ -68,7 +79,7 @@ out = open(outFileName, 'w')
 #parse cities into a list of lists.
 cities = readinstance(args.inputFile)
 
-print(str(timeit.timeit(lambda:calcTsp(cities),number=1)))
+print(str(timeit.timeit(lambda:calcTsp(cities, out),number=1)))
 
 if (out):
 	out.close()
