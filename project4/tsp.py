@@ -19,11 +19,6 @@ import math #for sqrt and round
 import argparse #for parsing args
 import re #for regex
 
-#constants
-INPUTFILE = "Amount.txt"
-OUTPUTFILE = "change.txt"
-SLOWMAX = 31 #maximum amount we allow for slowchange
-
 #Source: tsp-verifier.py from supplied project files
 def distance(a,b):
     # a and b are integer pairs (each representing a point in a 2D, integer grid)
@@ -58,19 +53,16 @@ def outputResults(cities, cityOrder, outFile):
 	for i in cityOrder:
 		outFile.write(str(i) + "\n")
 
-
 def calcTsp(cities, outFile):
 	#Input: an array of x, y cartesian coordinates
 	#Output: an approximate shortest path between input coordinates
 	cityOrder = [0, 1, 2, 3, 4] #test
 	outputResults(cities, cityOrder, outFile)
 
-
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Enter an input file path")
 parser.add_argument("inputFile", type=str, help="Path to input file")
 args = parser.parse_args()
-
 
 #setup output file
 outFileName = args.inputFile + ".tour"
