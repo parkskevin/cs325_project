@@ -45,19 +45,35 @@ def readinstance(filename):
     f.close()
     return cities
 
+def adjList(cities):
+    # generate adjacency list from cities list.
+    # input: list of coordinate pairs lists
+    # output: 2d list of distances. 
+    # adj[i][j] where i is the city id and j is neighbor city id
+    n = len(cities)
+    adj = []
+    for i in range(n):
+        adj.append([])
+        for j in range(n):
+            adj[i].append(distance(cities[i], cities[j]))
+    return adj
+
+
 def outputResults(cities, cityOrder, outFile):
 	dist = 0
 	for i in range(1, len(cityOrder), 1):
 		dist += distance(cities[i], cities[i - 1])
-	outFile.write(str(dist) + "\n")
+        outFile.write(str(dist) + "\n")
+
 	for i in cityOrder:
 		outFile.write(str(i) + "\n")
 
 def calcTsp(cities, outFile):
 	#Input: an array of x, y cartesian coordinates
 	#Output: an approximate shortest path between input coordinates
-	cityOrder = [0, 1, 2, 3, 4] #test
-	outputResults(cities, cityOrder, outFile)
+    cityOrder = [0, 1, 2, 3, 4] #test
+    adj = adjList(cities)
+    outputResults(cities, cityOrder, outFile)
 
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Enter an input file path")
