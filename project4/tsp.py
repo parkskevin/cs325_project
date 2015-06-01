@@ -55,9 +55,34 @@ def adjList(cities):
     for i in range(n):
         adj.append([])
         for j in range(n):
-            adj[i].append(distance(cities[i], cities[j]))
+            if i == j:
+                adj[i].append(sys.maxint)
+            else:
+                adj[i].append(distance(cities[i], cities[j]))
     return adj
 
+def prims(adj):#work in progress*********************************
+    #generate minimum spanning tree of coordinates in cities
+    cityList = adj
+    treeV = []
+    treeE = []
+    treeV.append(0) 
+    while len(treeV) < len(cities):
+        minEdge = sys.maxint
+        minIndexOut = 0
+        minIndexIn = 0
+        #Find shortest outgoing edge from current tree
+        for i in range(len(treeV)):
+            for j in range(len(adj[i])):
+                curEdge = adj[i][j]
+                curIndex = j
+                if (curIndex not in treeV and curEdge < minEdge and curEdge != 0):
+                    minEdge = curEdge
+                    minIndexIn = curIndex
+                    minIndexOut = i
+        treeV.append(minIndexIn)
+        treeE.append((minIndexOut, minIndexIn))
+    return (treeV, treeE)
 
 def outputResults(cities, cityOrder, outFile):
 	dist = 0
@@ -73,6 +98,8 @@ def calcTsp(cities, outFile):
 	#Output: an approximate shortest path between input coordinates
     cityOrder = [0, 1, 2, 3, 4] #test
     adj = adjList(cities)
+    mst = prims(adj)
+    print str(mst)
     outputResults(cities, cityOrder, outFile)
 
 #cmd line args parser setup
