@@ -68,17 +68,18 @@ def prims(adj):
 	treeV.append(0) 
 	while len(treeV) < len(adj):
 		minEdge = sys.maxint
-		minIndexOut = 0
-		minIndexIn = 0
+		minIndexOut = 0 #in treeV
+		minIndexIn = 0  #to add to treeV
 		#Find shortest outgoing edge from current tree
+		#Iterate through treeV
 		for i in range(len(treeV)):
+			#Iterate through treeV[i].adj
 			for j in range(len(adj[treeV[i]])):
-				curEdge = adj[treeV[i]][j]
-				curIndex = j
-				if (curIndex not in treeV and curEdge < minEdge and curEdge != 0):
+				curEdge = adj[treeV[i]][j] 
+				if ((j not in treeV) and (curEdge < minEdge) and (curEdge > 0)):
 					minEdge = curEdge
-					minIndexIn = curIndex
-					minIndexOut = i
+					minIndexIn = j
+					minIndexOut = treeV[i]
 		treeV.append(minIndexIn)
 		treeE.append((minIndexOut, minIndexIn))
 	return (treeV, treeE)
@@ -119,25 +120,48 @@ def outputResults(cities, cityOrder, outFile):
 	for i in cityOrder:
 		outFile.write(str(i) + "\n")
 
-def matlabGraph(cities, mst):
+# def matlabGraph(cities, mst):
+# 	graphFile = open("matlabGraph.txt", 'w')
+# 	graphFile.write("x=[")
+# 	for i in range(len(cities)):
+# 		graphFile.write(str(cities[mst[0][i]][0]) + " ")
+# 	graphFile.write("];\n")
+# 	graphFile.write("y=[")
+# 	for i in range(len(cities)):
+# 		graphFile.write(str(cities[mst[0][i]][1]) + " ")
+# 	graphFile.write("];\n")
+# 	graphFile.write("hold on;\n")
+# 	graphFile.write("scatter(x, y)\n")
+# 	x = []
+# 	y = []
+# 	for i in range(len(mst[1])):
+# 		x.append([cities[mst[1][i][0]][0],cities[mst[1][i][1]][0]])
+# 		y.append([cities[mst[1][i][0]][1],cities[mst[1][i][1]][1]])
+
+# 	for i in range(len(mst[1])):
+# 		graphFile.write("plot([" + str(x[i][0]) + " " + str(x[i][1]) + \
+# 			"],[" + str(y[i][0]) + " " + str(y[i][1]) + "]);\n")
+
+# 	graphFile.close()
+
+def matlabGraph(cities, cityOrder):
 	graphFile = open("matlabGraph.txt", 'w')
 	graphFile.write("x=[")
 	for i in range(len(cities)):
-		graphFile.write(str(cities[mst[0][i]][0]) + " ")
+		graphFile.write(str(cities[i][0]) + " ")
 	graphFile.write("];\n")
 	graphFile.write("y=[")
 	for i in range(len(cities)):
-		graphFile.write(str(cities[mst[0][i]][1]) + " ")
+		graphFile.write(str(cities[i][1]) + " ")
 	graphFile.write("];\n")
 	graphFile.write("hold on;\n")
 	graphFile.write("scatter(x, y)\n")
 	x = []
 	y = []
-	for i in range(len(mst[1])):
-		x.append([cities[mst[1][i][0]][0],cities[mst[1][i][1]][0]])
-		y.append([cities[mst[1][i][0]][1],cities[mst[1][i][1]][1]])
-
-	for i in range(len(mst[1])):
+	for i in range(1, len(cityOrder), 1):
+		x.append([cities[cityOrder[i-1]][0],cities[cityOrder[i]][0]])
+		y.append([cities[cityOrder[i-1]][1],cities[cityOrder[i]][1]])
+	for i in range(len(x)):
 		graphFile.write("plot([" + str(x[i][0]) + " " + str(x[i][1]) + \
 			"],[" + str(y[i][0]) + " " + str(y[i][1]) + "]);\n")
 
@@ -148,9 +172,10 @@ def calcTsp(cities, outFile):
 	#Output: an approximate shortest path between input coordinates
 	adj = adjList(cities)
 	mst = prims(adj)
-	matlabGraph(cities, mst)
 	cityOrder = preOrderWalk(mst)
+	matlabGraph(cities, cityOrder)
 	outputResults(cities, cityOrder, outFile)
+	print str(cityOrder)
 
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Enter an input file path")
