@@ -61,7 +61,7 @@ def adjList(cities):
                 adj[i].append(distance(cities[i], cities[j]))
     return adj
 
-def prims(adj):#work in progress*********************************
+def prims(adj):
     #generate minimum spanning tree of coordinates in cities
     cityList = adj
     treeV = []
@@ -93,13 +93,37 @@ def outputResults(cities, cityOrder, outFile):
 	for i in cityOrder:
 		outFile.write(str(i) + "\n")
 
+def matlabGraph(cities, mst):
+    graphFile = open("matlabGraph.txt", 'w')
+    graphFile.write("x=[")
+    for i in range(len(cities)):
+        graphFile.write(str(cities[mst[0][i]][0]) + " ")
+    graphFile.write("];\n")
+    graphFile.write("y=[")
+    for i in range(len(cities)):
+        graphFile.write(str(cities[mst[0][i]][1]) + " ")
+    graphFile.write("];\n")
+    graphFile.write("hold on;\n")
+    graphFile.write("scatter(x, y)\n")
+    x = []
+    y = []
+    for i in range(len(mst[1])):
+        x.append([cities[mst[1][i][0]][0],cities[mst[1][i][1]][0]])
+        y.append([cities[mst[1][i][0]][1],cities[mst[1][i][1]][1]])
+
+    for i in range(len(mst[1])):
+        graphFile.write("plot([" + str(x[i][0]) + " " + str(x[i][1]) + \
+            "],[" + str(y[i][0]) + " " + str(y[i][1]) + "]);\n")
+
+    graphFile.close()
+
 def calcTsp(cities, outFile):
 	#Input: an array of x, y cartesian coordinates
 	#Output: an approximate shortest path between input coordinates
     cityOrder = [0, 1, 2, 3, 4] #test
     adj = adjList(cities)
     mst = prims(adj)
-    print str(mst)
+    matlabGraph(cities, mst)
     outputResults(cities, cityOrder, outFile)
 
 #cmd line args parser setup
