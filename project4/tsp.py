@@ -63,18 +63,17 @@ def adjList(cities):
 
 def prims(adj):
     #generate minimum spanning tree of coordinates in cities
-    cityList = adj
     treeV = []
     treeE = []
     treeV.append(0) 
-    while len(treeV) < len(cities):
+    while len(treeV) < len(adj):
         minEdge = sys.maxint
         minIndexOut = 0
         minIndexIn = 0
         #Find shortest outgoing edge from current tree
         for i in range(len(treeV)):
-            for j in range(len(adj[i])):
-                curEdge = adj[i][j]
+            for j in range(len(adj[treeV[i]])):
+                curEdge = adj[treeV[i]][j]
                 curIndex = j
                 if (curIndex not in treeV and curEdge < minEdge and curEdge != 0):
                     minEdge = curEdge
