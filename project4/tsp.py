@@ -96,8 +96,6 @@ def preOrderWalk(mst):
 	#get the walk order
 	order = []
 	findAdj(adj, 0, order)
-	#append the route back to the route to complete tour
-	order.append(0)
 	return order
 
 #base case: if the node is a leaf, add it, return
@@ -115,6 +113,8 @@ def outputResults(cities, cityOrder, outFile):
 	dist = 0
 	for i in range(1, len(cityOrder), 1):
 		dist += distance(cities[cityOrder[i]], cities[cityOrder[i - 1]])
+	#need route to root added since can't be in cityOrder list for verifier
+	dist += distance(cities[cityOrder[i]], cities[cityOrder[0]])
 	outFile.write(str(dist) + "\n")
 
 	for i in cityOrder:
