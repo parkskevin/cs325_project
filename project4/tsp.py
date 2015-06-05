@@ -65,7 +65,9 @@ def prims(adj):
 	#generate minimum spanning tree of coordinates in cities
 	treeV = []
 	treeE = []
+	setV = set()
 	treeV.append(0) 
+	setV.add(0)
 	while len(treeV) < len(adj):
 		minEdge = sys.maxint
 		minIndexOut = 0 #in treeV
@@ -76,10 +78,11 @@ def prims(adj):
 			#Iterate through treeV[i].adj
 			for j in range(len(adj[treeV[i]])):
 				curEdge = adj[treeV[i]][j] 
-				if ((j not in treeV) and (curEdge < minEdge) and (curEdge > 0)):
+				if ((j not in setV) and (curEdge < minEdge) and (curEdge > 0)):
 					minEdge = curEdge
 					minIndexIn = j
 					minIndexOut = treeV[i]
+		setV.add(minIndexIn)
 		treeV.append(minIndexIn)
 		treeE.append((minIndexOut, minIndexIn))
 	return (treeV, treeE)
