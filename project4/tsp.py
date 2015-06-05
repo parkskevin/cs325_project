@@ -18,13 +18,15 @@ import timeit #for timings
 import math #for sqrt and round
 import argparse #for parsing args
 import re #for regex
-
+import math
 #Source: tsp-verifier.py from supplied project files
 def distance(a,b):
 	# a and b are integer pairs (each representing a point in a 2D, integer grid)
 	# Euclidean distance rounded to the nearest integer:
 	dx = a[0]-b[0]
 	dy = a[1]-b[1]
+	if dx == 0 and dy == 0:
+		return sys.maxint
 	#return int(math.sqrt(dx*dx + dy*dy)+0.5) # equivalent to the next line
 	return int(round(math.sqrt(dx*dx + dy*dy)))
 	
@@ -51,14 +53,12 @@ def adjList(cities):
 	# output: 2d list of distances. 
 	# adj[i][j] where i is the city id and j is neighbor city id
 	n = len(cities)
-	adj = []
+	adj = [[0 for i in range(n)] for j in range(n)]
 	for i in range(n):
-		adj.append([])
-		for j in range(n):
-			if i == j:
-				adj[i].append(sys.maxint)
-			else:
-				adj[i].append(distance(cities[i], cities[j]))
+		if not (i % 1000):
+			print "calculating adjList" + str(i) + "/" + str(n)
+		for j in range(i, n, 1):
+			adj[i][j] = adj[j][i] = distance(cities[i], cities[j])
 	return adj
 
 def prims(adj):
@@ -66,59 +66,85 @@ def prims(adj):
 	treeV = []
 	treeE = []
 	treeV.append(0) 
+	totalMaxDistance = max([max(x) for x in adj])
+	shortestEdges = [] 
+	#Tuple of shortest edges in V: (Idx into V, idx of nearest neighbor, dist)
+	shortestEdges.append([0, adj[0].index(min(adj[0])), min(adj[0])])
 	while len(treeV) < len(adj):
-		minEdge = sys.maxint
-		minIndexOut = 0 #in treeV
-		minIndexIn = 0  #to add to treeV
-		#Find shortest outgoing edge from current tree
-		#Iterate through treeV
-		for i in range(len(treeV)):
-			#Iterate through treeV[i].adj
-			for j in range(len(adj[treeV[i]])):
-				curEdge = adj[treeV[i]][j] 
-				if ((j not in treeV) and (curEdge < minEdge) and (curEdge > 0)):
-					minEdge = curEdge
-					minIndexIn = j
-					minIndexOut = treeV[i]
-		treeV.append(minIndexIn)
-		treeE.append((minIndexOut, minIndexIn))
+		print "lenth of treeV: " + str(len(treeV))
+		#Check for shortest of each vertex's shortest edges
+		for i, j in enumerate(shortestEdges): 
+			counter = 0
+			while j[1] in treeV and counter < len(adj):  #neighbor is in treeV
+				counter += 1
+				adj[j[0]][j[1]] = sys.maxint #Set dist to neighbor to maxint
+				newMinEdge = min(adj[j[0]])  #dist to new closest neighbor
+				#Reset shortest edge for member of treeV
+				if newMinEdge > totalMaxDistance / 4:
+					shortestEdges.pop(i)
+				else:	
+					shortestEdges[i][1] = adj[j[0]].index(newMinEdge)
+					shortestEdges[i][2] = newMinEdge
+
+		#list of distances in shortestEdges
+		distanceList = [i[2] for i in shortestEdges]
+		#origin vertex for min edge 
+		edgeOut = shortestEdges[distanceList.index(min(distanceList))][0]
+		#destination vertex for min edge; newest member of treeV
+		edgeIn = shortestEdges[distanceList.index(min(distanceList))][1]
+		#calculate shortest edge from new vertex; add to shortestEdges
+		shortestEdges.append([edgeIn, adj[edgeIn].index(min(adj[edgeIn])), min(adj[edgeIn])])
+		#Add newest vertex
+		treeV.append(edgeIn)
+		for i, j in enumerate(shortestEdges):
+			if j[1] == edgeIn:
+				adj[j[0]][j[1]] = sys.maxint #Set dist to neighbor to maxint
+				newMinEdge = min(adj[j[0]])  #dist to new closest neighbor
+				#Reset shortest edge for member of treeV
+				shortestEdges[i][1] = adj[j[0]].index(newMinEdge)
+				shortestEdges[i][2] = newMinEdge
+
+
+		#Add newest edge
+		treeE.append((edgeOut, edgeIn))
+	
 	return (treeV, treeE)
 
 def preOrderWalk(mst):
 	#build new adj list from tree data
-	adj = []
-	for i in range(len(mst[0])):
-		adj.append([])
-		for j in range(len(mst[1])):
-			inV, outV = mst[1][j]
-			if (inV == i):
-				adj[i].append(outV)
-	#get the walk order
+	adj = [[]for i in mst[0]]
+	outV = [i[0] for i in mst[1]]
+	inV = [i[1] for i in mst[1]]
+	for i, j in enumerate(mst[0]):
+		adj[mst[0][i]] = ([inV[k] for k, x in enumerate(outV) if x == j])
+
+	# #get the walk order
 	order = []
-	findAdj(adj, 0, order)
+	order = findAdj(adj, 0)
+	order.append(0)
 	return order
 
 #base case: if the node is a leaf, add it, return
 #recursive case: recursively add each child (similar to left-child, then right-child, etc)	
-def findAdj(adj, start, order):
-	if (len(adj[start]) == 0):
-		order.append(start)
-		return
-	order.append(start)
-	for i in range(len(adj[start])):
-		findAdj(adj, adj[start][i], order)
-	return order
+def findAdj(adj, start):
+	suborder = []
+	suborder.append(start)
+	while adj[start]:
+		suborder += findAdj(adj, adj[start].pop(0))
+	return suborder
 	
 def outputResults(cities, cityOrder, outFile):
+
 	dist = 0
 	for i in range(1, len(cityOrder), 1):
 		dist += distance(cities[cityOrder[i]], cities[cityOrder[i - 1]])
+
 	#need route to root added since can't be in cityOrder list for verifier
-	dist += distance(cities[cityOrder[i]], cities[cityOrder[0]])
+	# dist += distance(cities[cityOrder[len(cityOrder)-1]], cities[cityOrder[0]])
 	outFile.write(str(dist) + "\n")
 
-	for i in cityOrder:
-		outFile.write(str(i) + "\n")
+	for i in range(len(cityOrder)-1):
+		outFile.write(str(cityOrder[i]) + "\n")
 
 # def matlabGraph(cities, mst):
 # 	graphFile = open("matlabGraph.txt", 'w')
@@ -167,15 +193,52 @@ def matlabGraph(cities, cityOrder):
 
 	graphFile.close()
 
+def calcTspLarge(cities):
+	x = [i[0] for i in cities]
+	y = [i[1] for i in cities]
+	midX = (max(x) + min(x)) / 3
+	midY = (max(y) + min(y)) / 3
+	sections = [[] for i in range(9)]
+	adjLists = [[] for i in range(9)]
+	msts = [[] for i in range(9)]
+	print "splitting graph"
+	for i in range(len(cities)):
+		if x[i] < midX and y[i] < midY:
+			sections[0].append(cities[i])
+		elif x[i] < midX and y[i] < 2 * midY:
+			sections[1].append(cities[i])
+		elif x[i] < midX:
+			sections[2].append(cities[i])
+		elif x[i] < 2 * midX and y[i] < midY:
+			sections[3].append(cities[i])
+		elif x[i] < 2 * midX and y[i] < 2 * midY:
+			sections[4].append(cities[i])
+		elif x[i] < 2 * midX:
+			sections[5].append(cities[i])
+		elif y[i] < midY:
+			sections[6].append(cities[i])
+		elif y[i] < 2 * midY:
+			sections[7].append(cities[i])
+		else:
+			sections[8].append(cities[i])		
+	for i in range(len(sections)):
+		adjLists[i] = adjList(sections[i])
+		msts[i] = prims(adjLists[i])
+
+
+
 def calcTsp(cities, outFile):
 	#Input: an array of x, y cartesian coordinates
 	#Output: an approximate shortest path between input coordinates
+	# if len(cities) > 5000:
+	# 	mst = calcTspLarge(cities)
+	# else:
+
 	adj = adjList(cities)
 	mst = prims(adj)
 	cityOrder = preOrderWalk(mst)
-	matlabGraph(cities, cityOrder)
 	outputResults(cities, cityOrder, outFile)
-	print str(cityOrder)
+	matlabGraph(cities, cityOrder)
 
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Enter an input file path")
@@ -188,8 +251,6 @@ out = open(outFileName, 'w')
 
 #parse cities into a list of lists.
 cities = readinstance(args.inputFile)
-
 print(str(timeit.timeit(lambda:calcTsp(cities, out),number=1)))
-
 if (out):
 	out.close()
