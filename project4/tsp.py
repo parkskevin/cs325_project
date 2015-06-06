@@ -122,14 +122,30 @@ def matlabGraph(cities, cityOrder):
 			"],[" + str(y[i][0]) + " " + str(y[i][1]) + "]);\n")
 
 	graphFile.close()
-	
+def triangleFunc(cities, order):
+	for i in range(len(order) - 3):
+		#if distance order[i]->order[i + 2] < order[i]->order[i+1], switch them 
+		if distance(cities[order[i]], cities[order[i + 2]]) + \
+		   distance(cities[order[i + 2]], cities[order[i + 1]]) + \
+		   distance(cities[order[i + 1]], cities[order[i + 3]]) < \
+		   distance(cities[order[i]], cities[order[i + 1]]) + \
+		   distance(cities[order[i + 1]], cities[order[i + 2]]) + \
+		   distance(cities[order[i + 2]], cities[order[i + 3]]):
+		   swap = order[i + 1]
+		   order[i + 1] = order[i + 2]
+		   order[i + 2] = swap
+	return order
+
+
 def calcTsp(cities, outFile):
 	#Input: an array of x, y cartesian coordinates
 	#Output: an approximate shortest path between input coordinates
 	adj = adjList(cities)
 	mst = prims(adj)
 	#matlabGraph(cities, mst[0])
-	outputResults(cities, mst[0], outFile)
+	inOrder = mst[0]
+	inOrder = triangleFunc(cities, inOrder)
+	outputResults(cities, inOrder, outFile)
 
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Enter an input file path")
