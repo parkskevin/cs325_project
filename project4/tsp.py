@@ -18,6 +18,8 @@ import timeit #for timings
 import math #for sqrt and round
 import argparse #for parsing args
 import re #for regex
+import operator #for prim sorting
+
 
 #Source: tsp-verifier.py from supplied project files
 def distance(a,b):
@@ -46,28 +48,27 @@ def readinstance(filename):
 	return cities
 
 def adjList(cities):
-	# generate adjacency list from cities list.
-	# input: list of coordinate pairs lists
-	# output: 2d list of distances. 
-	# adj[i][j] where i is the city id and j is neighbor city id
 	n = len(cities)
 	adj = []
 	for i in range(n):
 		adj.append([])
 		for j in range(n):
 			if i == j:
-				adj[i].append(sys.maxint)
+				adj[i].append((j, sys.maxint))
 			else:
-				adj[i].append(distance(cities[i], cities[j]))
-	return adj
-
+				adj[i].append((j, distance(cities[i], cities[j])))
+	#greedy sorting, move shortest distances in general to front
+	for i in range(len(adj)):
+		adj[i].sort(key = operator.itemgetter(1))
+	return adj	
+		
 def prims(adj):
 	#generate minimum spanning tree of coordinates in cities
 	treeV = []
 	treeE = []
-	setV = set()
-	treeV.append(0) 
-	setV.add(0)
+	treeV.append(0)
+	uniqueV = set()
+	uniqueV.add(0)
 	while len(treeV) < len(adj):
 		minEdge = sys.maxint
 		minIndexOut = 0 #in treeV
@@ -75,42 +76,18 @@ def prims(adj):
 		#Find shortest outgoing edge from current tree
 		#Iterate through treeV
 		for i in range(len(treeV)):
-			#Iterate through treeV[i].adj
-			for j in range(len(adj[treeV[i]])):
-				curEdge = adj[treeV[i]][j] 
-				if ((j not in setV) and (curEdge < minEdge) and (curEdge > 0)):
-					minEdge = curEdge
-					minIndexIn = j
+			#grab the first matching vertex that meets the criteria, then break, we're done because they are sorted
+			for index, value in adj[treeV[i]]:
+				if (index not in uniqueV):
+					adj[treeV[i]] = [x for x in adj[treeV[i]] if  adj[treeV[i]][0] == index]
+					minEdge = value
+					minIndexIn = index
 					minIndexOut = treeV[i]
-		setV.add(minIndexIn)
+					break
 		treeV.append(minIndexIn)
+		uniqueV.add(minIndexIn)
 		treeE.append((minIndexOut, minIndexIn))
 	return (treeV, treeE)
-
-def preOrderWalk(mst):
-	#build new adj list from tree data
-	adj = []
-	for i in range(len(mst[0])):
-		adj.append([])
-		for j in range(len(mst[1])):
-			inV, outV = mst[1][j]
-			if (inV == i):
-				adj[i].append(outV)
-	#get the walk order
-	order = []
-	findAdj(adj, 0, order)
-	return order
-
-#base case: if the node is a leaf, add it, return
-#recursive case: recursively add each child (similar to left-child, then right-child, etc)	
-def findAdj(adj, start, order):
-	if (len(adj[start]) == 0):
-		order.append(start)
-		return
-	order.append(start)
-	for i in range(len(adj[start])):
-		findAdj(adj, adj[start][i], order)
-	return order
 	
 def outputResults(cities, cityOrder, outFile):
 	dist = 0
@@ -122,30 +99,6 @@ def outputResults(cities, cityOrder, outFile):
 
 	for i in cityOrder:
 		outFile.write(str(i) + "\n")
-
-# def matlabGraph(cities, mst):
-# 	graphFile = open("matlabGraph.txt", 'w')
-# 	graphFile.write("x=[")
-# 	for i in range(len(cities)):
-# 		graphFile.write(str(cities[mst[0][i]][0]) + " ")
-# 	graphFile.write("];\n")
-# 	graphFile.write("y=[")
-# 	for i in range(len(cities)):
-# 		graphFile.write(str(cities[mst[0][i]][1]) + " ")
-# 	graphFile.write("];\n")
-# 	graphFile.write("hold on;\n")
-# 	graphFile.write("scatter(x, y)\n")
-# 	x = []
-# 	y = []
-# 	for i in range(len(mst[1])):
-# 		x.append([cities[mst[1][i][0]][0],cities[mst[1][i][1]][0]])
-# 		y.append([cities[mst[1][i][0]][1],cities[mst[1][i][1]][1]])
-
-# 	for i in range(len(mst[1])):
-# 		graphFile.write("plot([" + str(x[i][0]) + " " + str(x[i][1]) + \
-# 			"],[" + str(y[i][0]) + " " + str(y[i][1]) + "]);\n")
-
-# 	graphFile.close()
 
 def matlabGraph(cities, cityOrder):
 	graphFile = open("matlabGraph.txt", 'w')
@@ -169,16 +122,14 @@ def matlabGraph(cities, cityOrder):
 			"],[" + str(y[i][0]) + " " + str(y[i][1]) + "]);\n")
 
 	graphFile.close()
-
+	
 def calcTsp(cities, outFile):
 	#Input: an array of x, y cartesian coordinates
 	#Output: an approximate shortest path between input coordinates
 	adj = adjList(cities)
 	mst = prims(adj)
-	cityOrder = preOrderWalk(mst)
-	matlabGraph(cities, cityOrder)
-	outputResults(cities, cityOrder, outFile)
-	print str(cityOrder)
+	#matlabGraph(cities, mst[0])
+	outputResults(cities, mst[0], outFile)
 
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Enter an input file path")
