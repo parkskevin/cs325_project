@@ -124,7 +124,8 @@ def matlabGraph(cities, cityOrder):
 	graphFile.close()
 def triangleFunc(cities, order):
 	for i in range(len(order) - 3):
-		#if distance order[i]->order[i + 2] < order[i]->order[i+1], switch them 
+		#if distance i->i+2->i+1->i+3 < i->i+1->i+2->i+3,
+		#swap i+1, i+2 
 		if distance(cities[order[i]], cities[order[i + 2]]) + \
 		   distance(cities[order[i + 2]], cities[order[i + 1]]) + \
 		   distance(cities[order[i + 1]], cities[order[i + 3]]) < \
@@ -136,15 +137,39 @@ def triangleFunc(cities, order):
 		   order[i + 2] = swap
 	return order
 
+def totalDist(cities, inOrder):
+	pathLength = 0
+	for i in range(1, len(inOrder), 1):
+		pathLength += distance(cities[inOrder[i]], cities[inOrder[i - 1]])
+	pathLength += distance(cities[inOrder[0]], cities[inOrder[len(inOrder)-1]])
+	return pathLength
+
+def findLastStop(cities, inOrder):
+	minDist = totalDist(cities, inOrder)
+	minOrder = inOrder
+	for i in range(1, len(inOrder) - 2, 1):
+		curOrder = [x for x in inOrder]
+		swap = curOrder[i]
+		curOrder[i] = curOrder[len(curOrder) - 1]
+		curOrder[len(curOrder) - 1] = swap
+		curDist = totalDist(cities, curOrder)
+		if curDist < minDist:
+			minDist = curDist
+			minOrder = [x for x in curOrder]
+	return minOrder
 
 def calcTsp(cities, outFile):
 	#Input: an array of x, y cartesian coordinates
 	#Output: an approximate shortest path between input coordinates
 	adj = adjList(cities)
 	mst = prims(adj)
-	#matlabGraph(cities, mst[0])
+	
 	inOrder = mst[0]
+	#remove curly q's
 	inOrder = triangleFunc(cities, inOrder)
+	inOrder = findLastStop(cities, inOrder)
+	print str(totalDist(cities, inOrder))
+	matlabGraph(cities, inOrder)
 	outputResults(cities, inOrder, outFile)
 
 #cmd line args parser setup
