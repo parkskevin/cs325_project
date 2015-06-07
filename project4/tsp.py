@@ -19,6 +19,7 @@ import math #for sqrt and round
 import argparse #for parsing args
 import re #for regex
 import operator #for prim sorting
+import signal #for stopping
 
 
 #Source: tsp-verifier.py from supplied project files
@@ -122,14 +123,92 @@ def matlabGraph(cities, cityOrder):
 			"],[" + str(y[i][0]) + " " + str(y[i][1]) + "]);\n")
 
 	graphFile.close()
+def triangleFunc(cities, order):
+	for i in range(len(order) - 3):
+		#if distance i->i+2->i+1->i+3 < i->i+1->i+2->i+3,
+		#swap i+1, i+2 
+		if distance(cities[order[i]], cities[order[i + 2]]) + \
+		   distance(cities[order[i + 2]], cities[order[i + 1]]) + \
+		   distance(cities[order[i + 1]], cities[order[i + 3]]) < \
+		   distance(cities[order[i]], cities[order[i + 1]]) + \
+		   distance(cities[order[i + 1]], cities[order[i + 2]]) + \
+		   distance(cities[order[i + 2]], cities[order[i + 3]]):
+		   swap = order[i + 1]
+		   order[i + 1] = order[i + 2]
+		   order[i + 2] = swap
+	return order
+
+def totalDist(cities, inOrder):
+	pathLength = 0
+	for i in range(1, len(inOrder), 1):
+		pathLength += distance(cities[inOrder[i]], cities[inOrder[i - 1]])
+	pathLength += distance(cities[inOrder[0]], cities[inOrder[len(inOrder)-1]])
+	return pathLength
+
+def findLastStop(cities, inOrder):
+	minDist = totalDist(cities, inOrder)
+	minOrder = inOrder
+	for i in range(1, len(inOrder) - 2, 1):
+		curOrder = [x for x in inOrder]
+		swap = curOrder[i]
+		curOrder[i] = curOrder[len(curOrder) - 1]
+		curOrder[len(curOrder) - 1] = swap
+		curDist = totalDist(cities, curOrder)
+		if curDist < minDist:
+			minDist = curDist
+			minOrder = [x for x in curOrder]
+	return minOrder
+
+#does essentially the same as outputResults, but used as global handler for SIGTERM
+#not sure what happens if we invoke SIGTERM before these globals are allocated...
+def handler(signum, frame):
+	dist = 0
+	for i in range(1, len(lastGoodOrder), 1):
+		dist += distance(lastCities[lastGoodOrder[i]], cities[lastGoodOrder[i - 1]])
+	#need route to root added since can't be in cityOrder list for verifier
+	dist += distance(lastCities[lastGoodOrder[i]], lastCities[lastGoodOrder[0]])
+	lastFileOut.write(str(dist) + "\n")
+
+	for i in lastGoodOrder:
+		lastFileOut.write(str(i) + "\n")
+	sys.exit()
 	
 def calcTsp(cities, outFile):
 	#Input: an array of x, y cartesian coordinates
 	#Output: an approximate shortest path between input coordinates
 	adj = adjList(cities)
 	mst = prims(adj)
-	#matlabGraph(cities, mst[0])
-	outputResults(cities, mst[0], outFile)
+	
+	#prepare for the optimization loop by setting locals to compare against,
+	#each time we improve, overwrite global so it may be used
+	#in signal handler of SIGTERM
+	inOrder = mst[0]
+	minDist = totalDist(cities, inOrder)
+	stopFlag = 0
+	#print str(minDist)
+	global lastGoodOrder
+	global lastCities
+	global lastFileOut
+	lastGoodOrder = inOrder
+	lastCities = cities
+	lastFileOut = outFile
+	#configure signal handler
+	signal.signal(signal.SIGTERM, handler)
+	
+	#remove curly q's, optimizing routine
+	while (1):
+		inOrder = triangleFunc(cities, inOrder)
+		inOrder = findLastStop(cities, inOrder)
+		newDist = totalDist(cities, inOrder)
+		if(newDist < minDist):
+			minDist = newDist
+			lastGoodOrder = inOrder
+			#print minDist
+		else:
+			break
+			#print "stopped at: ", minDist
+	#matlabGraph(cities, inOrder)
+	outputResults(cities, lastGoodOrder, outFile)
 
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Enter an input file path")
@@ -143,7 +222,8 @@ out = open(outFileName, 'w')
 #parse cities into a list of lists.
 cities = readinstance(args.inputFile)
 
-print(str(timeit.timeit(lambda:calcTsp(cities, out),number=1)))
+#print(str(timeit.timeit(lambda:calcTsp(cities, out),number=1)))
+calcTsp(cities, out)
 
 if (out):
 	out.close()
