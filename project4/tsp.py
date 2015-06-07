@@ -19,6 +19,7 @@ import math #for sqrt and round
 import argparse #for parsing args
 import re #for regex
 import operator #for prim sorting
+import signal #for stopping
 
 
 #Source: tsp-verifier.py from supplied project files
@@ -165,12 +166,33 @@ def calcTsp(cities, outFile):
 	mst = prims(adj)
 	
 	inOrder = mst[0]
+	minDist = totalDist(cities, inOrder)
+	stopFlag = 0
+	print str(minDist)
+	lastGoodOrder = inOrder
+	#configure signal handler
+	for sig in (signal.SIGABRT, signal.SIGINT, signal.SIGTERM):
+		outputResults(cities, lastGoodOrder, outFile)
 	#remove curly q's
-	inOrder = triangleFunc(cities, inOrder)
-	inOrder = findLastStop(cities, inOrder)
-	print str(totalDist(cities, inOrder))
-	matlabGraph(cities, inOrder)
-	outputResults(cities, inOrder, outFile)
+	while (stopFlag == 0):
+		inOrder = triangleFunc(cities, inOrder)
+		inOrder = findLastStop(cities, inOrder)
+		newDist = totalDist(cities, inOrder)
+		if(newDist < minDist):
+			minDist = newDist
+			lastGoodOrder = inOrder
+			print minDist
+		else:
+			stopFlag = 1
+			print "stopped at: ", minDist
+	# inOrder = triangleFunc(cities, inOrder)
+	# inOrder = findLastStop(cities, inOrder)
+	# print str(totalDist(cities, inOrder))
+	# inOrder = triangleFunc(cities, inOrder)
+	# inOrder = findLastStop(cities, inOrder)
+	# print str(totalDist(cities, inOrder))
+	# matlabGraph(cities, inOrder)
+	outputResults(cities, lastGoodOrder, outFile)
 
 #cmd line args parser setup
 parser = argparse.ArgumentParser(description="Enter an input file path")
